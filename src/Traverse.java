@@ -29,10 +29,11 @@ public class Traverse {
     eve.getConfidants().addAll(Arrays.asList(frank, irene));
     frank.getConfidants().addAll(Arrays.asList(bob, grace));
     grace.getConfidants().add(henry);
-    henry.getConfidants().addAll(Arrays.asList(alice, diana));
+    henry.getConfidants().addAll(Arrays.asList());
     irene.getConfidants().addAll(Arrays.asList(jack, diana));
     jack.getConfidants().addAll(Arrays.asList(charlie, bob));
 
+    // printGossipers(grace);
 
     Map<Integer, Set<Integer>> graph = new HashMap<>();
     graph.put(3, new HashSet<>(Arrays.asList(7, 34)));
@@ -45,6 +46,8 @@ public class Traverse {
     graph.put(45, new HashSet<>(Arrays.asList(23)));
     graph.put(23, new HashSet<>());
     graph.put(67, new HashSet<>(Arrays.asList(91)));
+
+    System.out.println(reachable(graph, 7, 91));
 
     // See below site for visualization of this graph
     // https://auberonedu.github.io/graph-explore/graph_site/viz.html
@@ -69,5 +72,45 @@ public class Traverse {
     v45.neighbors = new ArrayList<>(List.of(v23));
     v23.neighbors = new ArrayList<>(List.of());
     v67.neighbors = new ArrayList<>(List.of(v91));
+  }
+
+  public static void printGossipers(Person person) {
+    printGossipers(person, new HashSet<>());
+  }
+
+  private static void printGossipers(Person person, Set<Person> visited) {
+    // Base case
+    if (visited.contains(person)) return;
+
+    // Action
+    System.out.println(person.getName());
+    visited.add(person);
+
+    // Recursive call
+    for (Person confidant : person.getConfidants()) {
+      if (!visited.contains(confidant)) printGossipers(confidant, visited);
+    }
+  }
+
+  public static boolean reachable(Map<Integer, Set<Integer>> graph, int start, int end) {
+    // if (!graph.containsKey(start)) return false;
+    return reachable(graph, start, end, new HashSet<>());
+  }
+
+  private static boolean reachable(Map<Integer, Set<Integer>> graph, int start, int end, Set<Integer> visited) {
+    // Base case
+    if (start == end) return true;
+    if (visited.contains(start)) return false;
+    // if (visited.contains(start) && visited.contains(end)) return true;
+
+    // Action
+    visited.add(start);
+
+    // Recursive call
+    for (int neighbor : graph.get(start)) {
+      if (reachable(graph, neighbor, end, visited)) return true;
+    }
+
+    return false;
   }
 }
